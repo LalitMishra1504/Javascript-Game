@@ -42,6 +42,12 @@ const keyupfun=(e)=>{
         keys.ArrowRight=false;
     }
 }
+function isCollide(a,b){
+    let aRect=a.getBoundingClientRect();
+    let bRect=b.getBoundingClientRect();
+    // console.log("arect",aRect);
+    return !((aRect.top>bRect.bottom)||(aRect.bottom<bRect.top)||(aRect.left>bRect.right)||(aRect.right<bRect.left));
+}
 function moveLine(){
     let lines=document.querySelectorAll('.roadline');
     lines.forEach((item)=>{
@@ -53,9 +59,15 @@ function moveLine(){
         item.style.top=item.y+"px";
     })
 }
-function moveCar(){
+function moveCar(car){
     let enemycar=document.querySelectorAll('.enemycar');
+    // console.log(car);
     enemycar.forEach((item)=>{
+        if(isCollide(item,car))
+        {
+            console.log("COLLIDE");
+            player.start=false;
+        }
         if(item.y>=750)
         {
             item.y=item.y-800;
@@ -67,9 +79,7 @@ function moveCar(){
 }
 function gameplay(){
     if(player.start){
-        // console.log("Game Started......");
         moveLine();
-        moveCar();
         let road=gameArea.getBoundingClientRect();
         // console.log(road);
         if(keys.ArrowUp&&player.y>(road.top+80))
@@ -89,15 +99,20 @@ function gameplay(){
             player.x+=player.speed;
         }
         let car=document.querySelector('.car');
+        moveCar(car);
         car.style.top=player.y+"px";
         car.style.left=player.x+"px";
         window.requestAnimationFrame(gameplay);
+        player.score++;
+        score.innerText="Score: "+player.score;
     }
 }
 function start(){
     gameArea.classList.remove('hide');
     startScreen.classList.add('hide');
+    score.classList.remove('hide');
     player.start=true;
+    player.score=0;
     window.requestAnimationFrame(gameplay);
     for(i=0;i<=5;i++){
         let roadline=document.createElement('div');
@@ -106,22 +121,19 @@ function start(){
         roadline.style.top=150*i+"px";
         gameArea.append(roadline);   
     }
-    for(i=0;i<3;i++){
+    for(i=0;i<=3;i++){
         let enemycar=document.createElement('div');
         enemycar.setAttribute('class','enemycar');
         enemycar.y=((i+1)*350)*-1;
         enemycar.style.top=150*i+"px";
-        enemycar.style.background="green"
+        enemycar.style.backgroundImage="url('enemycarimg.1.png')";
+        // enemycar.style.background
         enemycar.style.left=Math.floor(Math.random()*350)+"px";
         gameArea.append(enemycar);   
     }
     let car=document.createElement('div');
     car.setAttribute('class','car');
-    // car.innerText="CAR ADDED";
     gameArea.appendChild(car);
-    // car.style.top="100px";
-    console.log(car.offsetLeft);
-    console.log(car.offsetTop);
     player.x=car.offsetLeft;
     player.y=car.offsetTop;
     gameArea.append(car);
