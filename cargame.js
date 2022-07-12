@@ -21,7 +21,7 @@ const keydownfun=(e)=>{
     {
         keys.ArrowRight=true;
     }
-    console.log(keys);
+    // console.log(keys);
 }
 const keyupfun=(e)=>{
     // console.log(e.key);
@@ -46,14 +46,17 @@ function isCollide(a,b){
     let aRect=a.getBoundingClientRect();
     let bRect=b.getBoundingClientRect();
     // console.log("arect",aRect);
+
     return !((aRect.top>bRect.bottom)||(aRect.bottom<bRect.top)||(aRect.left>bRect.right)||(aRect.right<bRect.left));
 }
 function moveLine(){
     let lines=document.querySelectorAll('.roadline');
+    // console.log(lines);
     lines.forEach((item)=>{
+        console.log(item.y);
         if(item.y>=800)
         {
-            item.y=item.y-750
+            item.y=10
         }
         item.y+=player.speed;
         item.style.top=item.y+"px";
@@ -63,10 +66,18 @@ function moveCar(car){
     let enemycar=document.querySelectorAll('.enemycar');
     // console.log(car);
     enemycar.forEach((item)=>{
-        if(isCollide(item,car))
+        if(isCollide(car,item))
         {
+            console.log(item.getBoundingClientRect());
+            console.log(car.getBoundingClientRect());
             console.log("COLLIDE");
             player.start=false;
+            startScreen.innerText=`Your Score is ${player.score} Press Here To Start....Arrow Keys To Move`
+            startScreen.classList.remove('hide');
+            score.classList.add('hide');
+            // gameArea.classList.add('hide');
+
+
         }
         if(item.y>=750)
         {
@@ -79,6 +90,7 @@ function moveCar(car){
 }
 function gameplay(){
     if(player.start){
+        // console.log("lalit");
         moveLine();
         let road=gameArea.getBoundingClientRect();
         // console.log(road);
@@ -108,12 +120,12 @@ function gameplay(){
     }
 }
 function start(){
-    gameArea.classList.remove('hide');
+    // gameArea.classList.remove('hide');
     startScreen.classList.add('hide');
     score.classList.remove('hide');
+    gameArea.innerHTML="";
     player.start=true;
     player.score=0;
-    window.requestAnimationFrame(gameplay);
     for(i=0;i<=5;i++){
         let roadline=document.createElement('div');
         roadline.setAttribute('class','roadline');
@@ -137,6 +149,7 @@ function start(){
     player.x=car.offsetLeft;
     player.y=car.offsetTop;
     gameArea.append(car);
+    window.requestAnimationFrame(gameplay);
 }
 document.addEventListener('keydown',keydownfun)
 document.addEventListener('keyup',keyupfun)
